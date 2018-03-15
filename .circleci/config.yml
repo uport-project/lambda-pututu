@@ -3,68 +3,40 @@ jobs:
   build:
     working_directory: ~/lambda-pututu
     docker:
-      - image: circleci/node:6
+      - image: circleci/node:6.10
     steps:
       - checkout
-      - run:
-          name: update-npm
-          command: 'sudo npm install -g npm@latest'
+
+      # Download and cache dependencies
       - restore_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
+          keys:
+            - dependencies-cache-{{ checksum "package.json" }}
+
       - run:
-          name: install-serverless
-          command: npm install -g serverless
-      - run:
-          name: install-codecov
-          command: npm install  -g codecov
-      - run:
-          name: install-npm-wee
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package.json" }}
-          paths:
-            - ./node_modules
+          name: install-serverless-and dependencies
+          command: |
+            sudo npm i -g serverless codecov
+            npm install
+
       - run:
           name: test
           command: npm test && codecov
+
       - run:
           name: code-coverage
           command: bash <(curl -s https://codecov.io/bash)
 
-  deploy_develop:
-    machine:
-        enabled: true
-    working_directory: ~/lambda-pututu
-    steps:
-      - checkout
       - run:
-          name: deploy-on-serverless-develop
-          command: sls deploy --stage develop
+          name: deploy-to-serverless
+          command: |
+            if [ "${CIRCLE_BRANCH}" == "develop" ]; then
+              sls deploy --stage develop
+            fi
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+              sls deploy --stage master
+            fi
 
-  deploy_master:
-    machine:
-        enabled: true
-    working_directory: ~/lambda-pututu
-    steps:
-      - checkout
-      - run:
-          name: deploy-on-serverless-master
-          command: sls deploy --stage master
-
-workflows:
-  version: 2
-  build-and-deploy:
-    jobs:
-      - build
-      - deploy_develop:
-          requires:
-            - build
-          filters:
-            branches:
-              only: develop
-      - deploy_master:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
+      - save_cache:
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules

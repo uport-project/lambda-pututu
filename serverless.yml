@@ -50,12 +50,12 @@ functions:
           path: message
           method: get
       - http:
-        path: message/{id}
-        method: get
-        request:
-          parameters:
-            paths:
-              id: true
+          path: message/{id}
+          method: get
+          request:
+            parameters:
+              paths:
+                id: true
   message_delete:
     handler: src/api_handler.message_delete
     events:
