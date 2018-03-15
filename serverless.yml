@@ -1,0 +1,69 @@
+# Welcome to serverless. Read the docs
+# https://serverless.com/framework/docs/
+
+# Serverless.yml is the configuration the CLI
+# uses to deploy your code to your provider of choice
+
+# The `service` block is the name of the service
+service: lambda-pututu
+
+# The `provider` block defines where your service will be deployed
+provider:
+  name: aws
+  runtime: nodejs6.10
+  stage: develop
+  region: us-west-2
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+      - KMS:Decrypt
+      Resource: ${self:custom.kmsSecrets.keyArn}
+  environment:
+      SECRETS: ${self:custom.kmsSecrets.secrets.SECRETS}
+
+# Use the serverless-webpack plugin to transpile ES6
+plugins:
+  - serverless-webpack
+  - serverless-kms-secrets
+  - serverless-offline
+
+  # Enable auto-packing of external modules
+custom:
+  webpackIncludeModules: true
+  serverless-kms-secrets:
+    secretsFile: kms-secrets.${opt:stage, self:provider.stage}.${opt:region, self:provider.region}.yml
+  kmsSecrets: ${file(kms-secrets.${opt:stage, self:provider.stage}.${opt:region, self:provider.region}.yml)}
+
+# The `functions` block defines what code to deploy
+functions:
+  sns:
+    handler: src/api_handler.sns
+    # The `events` block defines how to trigger the handler.helloWorld code
+    events:
+      - http:
+          path: sns
+          method: post
+  message_get:
+    handler: src/api_handler.messsage_get
+    events:
+      - http:
+          path: message
+          method: get
+      - http:
+        path: message/{id}
+        method: get
+        request:
+          parameters:
+            paths:
+              id: true
+  message_delete:
+    handler: src/api_handler.message_delete
+    events:
+      - http:
+          path: message/{id}
+          method: delete
+          request:
+            parameters:
+              paths:
+                id: true
+

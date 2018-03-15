@@ -1,0 +1,61 @@
+{
+  "name": "lambda-pututu",
+  "version": "0.0.1",
+  "description": "uPort push notification service",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --verbose --runInBand",
+    "coverage": "jest --coverage",
+    "tdd": "jest --watchAll"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uport-project/lambda-pututu.git"
+  },
+  "contributors": [
+    {
+      "name": "Andres Junge",
+      "email": "andres.junge@consensys.net"
+    },
+    {
+      "name": "Cristobal Castillo",
+      "email": "cristobal.castillo@consensys.net"
+    }
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/uport-project/lambda-pututu/issues"
+  },
+  "homepage": "https://github.com/uport-project/lambda-pututu#readme",
+  "devDependencies": {
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "jest": "^21.2.0",
+    "serverless-offline": "^3.18.0"
+  },
+  "dependencies": {
+    "serverless-kms-secrets": "^1.0.2",
+    "serverless-webpack": "^3.1.0",
+    "webpack": "^3.6.0",
+    "webpack-node-externals": "^1.6.0",
+    "pg": "^7.4.0"
+  },
+  "jest": {
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 7,
+      "sourceType": "module"
+    },
+    "env": {
+      "node": true
+    },
+    "rules": {
+      "no-console": 0,
+      "no-unused-vars": 1
+    }
+  }
+}
