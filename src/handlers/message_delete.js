@@ -1,4 +1,4 @@
-class MessageGetHandler {
+class MessageDeleteHandler {
   constructor(uPortMgr, messageMgr) {
     this.uPortMgr = uPortMgr;
     this.messageMgr = messageMgr;
@@ -42,14 +42,15 @@ class MessageGetHandler {
 
     if (event.pathParameters && event.pathParameters.id) {
       let messageId;
-      let msg;
+      let message;
       messageId = event.pathParameters.id;
       try {
         msg = await this.messageMgr.read(recipientId, messageId);
         if (!msg) {
           cb({ code: 404, message: "message not found" });
         }
-        cb(null, { messages: msg });
+        await this.messageMgr.delete(recipientId, messageId);
+        cb(null);
         return;
       } catch (error) {
         console.log("Error on this.messageMgr.read");
@@ -58,20 +59,10 @@ class MessageGetHandler {
         return;
       }
     } else {
-      try {
-        let messages = await this.messageMgr.read(recipientId);
-        if (messages.length == 0) {
-          cb({ code: 404, message: "message not found" });
-        }
-        cb(null, { messages: messages });
-      } catch (error) {
-        console.log("Error on this.messageMgr.read");
-        console.log(error);
-        cb({ code: 500, message: error.message });
-        return;
-      }
+      cb({ code: 400, message: "no message id" });
+      return;
     }
   }
 }
 
-module.exports = MessageGetHandler;
+module.exports = MessageDeleteHandler;
