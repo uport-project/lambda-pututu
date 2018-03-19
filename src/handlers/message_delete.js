@@ -49,6 +49,9 @@ class MessageDeleteHandler {
         if (!msg) {
           cb({ code: 404, message: "message not found" });
         }
+        if (msg && msg.recipient != recipientId) {
+          cb({ code: 403, message: "forbidden" });
+        }
         await this.messageMgr.delete(recipientId, messageId);
         cb(null);
         return;
