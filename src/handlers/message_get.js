@@ -49,7 +49,7 @@ class MessageGetHandler {
         if (!msg) {
           cb({ code: 404, message: "message not found" });
         }
-        if (msg.recipientId != recipientId) {
+        if (msg.recipient != recipientId) {
           cb({ code: 403, message: "access to message forbidden" });
         }
         cb(null, { messages: msg });

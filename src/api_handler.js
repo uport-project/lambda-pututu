@@ -3,7 +3,6 @@ const AWS = require("aws-sdk");
 const kms = new AWS.KMS();
 const querystring = require("querystring");
 
-const AuthMgr = require("./lib/authMgr");
 const UPortMgr = require("./lib/uPortMgr");
 const MessageMgr = require("./lib/messageMgr");
 const SnsMgr = require("./lib/snsMgr");
@@ -12,12 +11,11 @@ const SnsHandler = require("./handlers/sns");
 const MessageGetHandler = require("./handlers/message_get");
 const MessageDeleteHandler = require("./handlers/message_delete");
 
-let authMgr = new AuthMgr();
 let uPortMgr = new UPortMgr();
 let snsMgr = new SnsMgr();
 let messageMgr = new MessageMgr();
 
-let snsHandler = new RecaptchaHandler(authMgr, uPortMgr, snsMgr);
+let snsHandler = new SnsHandler(snsMgr);
 let messageGetHandler = new MessageGetHandler(uPortMgr, messageMgr);
 let messageDeleteHandler = new MessageDeleteHandler(uPortMgr, messageMgr);
 
@@ -33,7 +31,6 @@ module.exports.message_delete = (event, context, callback) => {
 
 const postHandler = (handler, event, context, callback) => {
   if (
-    !authMgr.isSecretsSet() ||
     !uPortMgr.isSecretsSet() ||
     !messageMgr.isSecretsSet() ||
     !snsMgr.isSecretsSet()
@@ -45,7 +42,6 @@ const postHandler = (handler, event, context, callback) => {
       .promise()
       .then(data => {
         const decrypted = String(data.Plaintext);
-        authMgr.setSecrets(JSON.parse(decrypted));
         uPortMgr.setSecrets(JSON.parse(decrypted));
         snsMgr.setSecrets(JSON.parse(decrypted));
         messageMgr.setSecrets(JSON.parse(decrypted));
