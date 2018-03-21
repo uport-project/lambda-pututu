@@ -25,7 +25,6 @@ class SnsHandler {
     }
 
     let fullArn = authHead.value;
-    let app;
     let vsA = req.authorization.value.split("/");
     vsA[0] = vsA[0].replace("endpoint", "app");
     let vs = vsA.join("/");

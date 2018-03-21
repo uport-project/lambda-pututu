@@ -28,8 +28,11 @@
   },
   "homepage": "https://github.com/uport-project/lambda-pututu#readme",
   "devDependencies": {
+    "ajv": "^6.3.0",
+    "aws-sdk-mock": "^1.7.0",
     "babel-loader": "^7.1.2",
     "babel-preset-env": "^1.6.0",
+    "chalk": "^2.3.2",
     "jest": "^21.2.0",
     "serverless-offline": "^3.18.0"
   },
@@ -47,19 +50,5 @@
   "jest": {
     "coverageDirectory": "./coverage/",
     "collectCoverage": true
-  },
-  "eslintConfig": {
-    "extends": "eslint:recommended",
-    "parserOptions": {
-      "ecmaVersion": 7,
-      "sourceType": "module"
-    },
-    "env": {
-      "node": true
-    },
-    "rules": {
-      "no-console": 0,
-      "no-unused-vars": 1
-    }
   }
 }

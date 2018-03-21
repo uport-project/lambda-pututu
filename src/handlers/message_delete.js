@@ -45,7 +45,7 @@ class MessageDeleteHandler {
       let message;
       messageId = event.pathParameters.id;
       try {
-        msg = await this.messageMgr.read(recipientId, messageId);
+        msg = await this.messageMgr.getMessage(recipientId, messageId);
         if (!msg) {
           cb({ code: 404, message: "message not found" });
         }
@@ -56,7 +56,7 @@ class MessageDeleteHandler {
         cb(null);
         return;
       } catch (error) {
-        console.log("Error on this.messageMgr.read");
+        console.log("Error on this.messageMgr.getMessage");
         console.log(error);
         cb({ code: 500, message: error.message });
         return;

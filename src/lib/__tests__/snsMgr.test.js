@@ -93,7 +93,7 @@ describe("SnsMgr", () => {
       });
   });
 
-  test("createMessage() no ecnmessage", done => {
+  test("createMessage() no encmessage", done => {
     sut
       .createMessage(senderId, recipientId)
       .then(resp => {
@@ -165,15 +165,15 @@ describe("SnsMgr", () => {
       });
   });
 
-  test("storeMessage() no message", done => {
+  test("storemessage() no message", done => {
     sut
-      .createMessage(senderId, recipientId)
+      .storeMessage(messagehash, senderId, recipientId)
       .then(resp => {
         fail("shouldn't return");
         done();
       })
       .catch(err => {
-        expect(err).toEqual("no encmessage");
+        expect(err).toEqual("no encrypted message");
         done();
       });
   });
@@ -205,7 +205,20 @@ describe("SnsMgr", () => {
       });
   });
 
-  test("count() happy path", done => {
+  test("getCountbyRecipient() no recipientId", done => {
+    sut
+      .getCountbyRecipient()
+      .then(resp => {
+        fail("shouldn't return");
+        done();
+      })
+      .catch(err => {
+        expect(err).toEqual("no recipient id");
+        done();
+      });
+  });
+
+  test("getCountbyRecipient() happy path", done => {
     pgClientMock.connect = jest.fn();
     pgClientMock.connect.mockClear();
     pgClientMock.end.mockClear();

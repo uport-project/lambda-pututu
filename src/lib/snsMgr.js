@@ -76,7 +76,6 @@ class SnsMgr {
     const messageHash = sha3(
       [senderId, recipientId, encmessage, Date.now().toString()].join(":")
     ).slice(2);
-    console.log("message hash", messageHash);
     const message = "New secure message";
     await this.storeMessage(messageHash, senderId, recipientId, encmessage);
 

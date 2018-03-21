@@ -1,6 +1,5 @@
 "use strict";
 const AWS = require("aws-sdk");
-const kms = new AWS.KMS();
 const querystring = require("querystring");
 
 const UPortMgr = require("./lib/uPortMgr");
@@ -30,11 +29,8 @@ module.exports.message_delete = (event, context, callback) => {
 };
 
 const postHandler = (handler, event, context, callback) => {
-  if (
-    !uPortMgr.isSecretsSet() ||
-    !messageMgr.isSecretsSet() ||
-    !snsMgr.isSecretsSet()
-  ) {
+  if (!messageMgr.isSecretsSet() || !snsMgr.isSecretsSet()) {
+    const kms = new AWS.KMS();
     kms
       .decrypt({
         CiphertextBlob: Buffer(process.env.SECRETS, "base64")
@@ -42,7 +38,6 @@ const postHandler = (handler, event, context, callback) => {
       .promise()
       .then(data => {
         const decrypted = String(data.Plaintext);
-        uPortMgr.setSecrets(JSON.parse(decrypted));
         snsMgr.setSecrets(JSON.parse(decrypted));
         messageMgr.setSecrets(JSON.parse(decrypted));
         doHandler(handler, event, context, callback);

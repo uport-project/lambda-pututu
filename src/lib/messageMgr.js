@@ -1,10 +1,12 @@
+import { Client } from "pg";
+
 class MessageMgr {
   constructor() {
     this.pg_url = null;
   }
 
   isSecretsSet() {
-    return this.pgUrl !== null;
+    return this.pgUrl != null;
   }
 
   setSecrets(secrets) {
@@ -51,7 +53,7 @@ class MessageMgr {
     }
   }
 
-  async delete(recipientId, messageId) {
+  async deleteMessage(recipientId, messageId) {
     if (!recipientId) throw "no recipient id";
     if (!messageId) throw "no message id";
     if (!this.pgUrl) throw "no pgUrl set";
