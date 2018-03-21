@@ -36,9 +36,9 @@ class SnsHandler {
     }
 
     try {
-      const user = await this.snsMgr.getUser(fullArn);
+      await app.getUser(fullArn);
     } catch (err) {
-      console.log("Error on sns.snsMgr.getUser");
+      console.log("Error on sns.getUser");
       console.log(err);
       cb({ code: 500, message: err.message });
       return;
