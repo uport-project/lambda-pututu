@@ -30,10 +30,10 @@ describe('UportMgr', () => {
     });
 
     describe('verifyToken() happy path', () => {
+        const DATE_TO_USE = new Date(1513399280000);
         Object.keys(jwts).forEach(didType => {
             test(didType, (done) =>{
                 const eventToken = jwts[didType]
-                const DATE_TO_USE = new Date('2017-12-15T22:41:20');
                 Date.now = jest.genMockFunction().mockReturnValue(DATE_TO_USE)
                 
                 sut.verifyToken(eventToken)
