@@ -7,7 +7,7 @@ describe("MessageDeleteHandler", () => {
   let uportMgrMock = new UportMgr();
   let messageMgrMock = new MessageMgr();
   let validToken =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpc3MiOiIyb294SjZ3V3V4UTE0aWloUU1NNHNzc2VyZVdjUEU0c1dRSCIsImlhdCI6MTUxNTcwMTA5OSwicHJldmlvdXMiOiJRbVJNdmdMSENMYmJFck5YRkgzeWJhNW1wVms2NHV5U1JBaXNNYnAyQVV0RDNKIiwiZXhwIjoxNTE1Nzg3NDk5fQ._ki2ihwOIclqCXShjbh2J0A3mNw3uHnjV5UlB4J6Y7pCImc413_wxzCP1wjQ9tN1Rfzih7GeDvL3huWUy2t9Mg";
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NkstUiJ9.eyJpYXQiOjE1MTU3MDEwOTYsInR5cGUiOiJ1c2VyLWF1dGgiLCJpc3MiOiJkaWQ6ZXRocjoweDhlNWE0OWQ5ZTViYWMxODE2OTM2MGY5N2RkODlkYjRjNWQ3YTExYTEifQ.GkXkrdArICLRy2daZlJ90tZxm1HA5V_0nz_17O2i4vfDUFAeliBWiKHVvUVHeDT-Bo_brk2lcA3SZaLIluoatwA";
   let messageId =
     "e37961d8153b209724520f48c7c1c781431302011de144425732be5f6bff23f2";
 
