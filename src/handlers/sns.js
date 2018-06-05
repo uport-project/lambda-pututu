@@ -14,6 +14,7 @@ class SnsHandler {
     }
 
     let authHead = event.headers["Authorization"];
+    console.log("auth header", authHead);
 
     if (authHead.type !== "notifications") {
       cb({ code: 403, message: "type is not notifications" });
