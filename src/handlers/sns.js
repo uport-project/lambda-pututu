@@ -1,6 +1,7 @@
 class SnsHandler {
-  constructor(snsMgr) {
+  constructor(snsMgr, uPortMgr) {
     this.snsMgr = snsMgr;
+    this.uPortMgr = uPortMgr;
   }
 
   async handle(event, context, cb) {
@@ -14,18 +15,41 @@ class SnsHandler {
     }
 
     let authHead = event.headers["Authorization"];
-    console.log("auth header", authHead);
 
-    if (authHead.type !== "notifications") {
+    let parts = authHead.split(" ");
+    if (parts.length !== 2) {
+      cb({ code: 401, message: "Format is Authorization: Bearer [token]" });
+      return;
+    }
+    let scheme = parts[0];
+    if (scheme !== "Bearer") {
+      cb({ code: 401, message: "Format is Authorization: Bearer [token]" });
+      return;
+    }
+
+    let payload;
+    try {
+      let dtoken = await this.uPortMgr.verifyToken(parts[1]);
+      payload = dtoken.payload;
+    } catch (error) {
+      console.log("Error on this.uportMgr.verifyToken");
+      console.log(error);
+      cb({ code: 401, message: "Invalid token" });
+      return;
+    }
+
+    console.log("auth header", payload);
+
+    if (payload.type !== "notifications") {
       cb({ code: 403, message: "type is not notifications" });
       return;
     }
-    if (authHead.value === undefined) {
+    if (payload.value === undefined) {
       cb({ code: 403, message: "value missing" });
       return;
     }
 
-    let fullArn = authHead.value;
+    let fullArn = payload.value;
     let vsA = fullArn.split("/");
     vsA[0] = vsA[0].replace("endpoint", "app");
     let vs = vsA.join("/");
@@ -46,13 +70,13 @@ class SnsHandler {
     }
 
     let encmessage = event.body.message;
-    let senderId = authHead.aud;
-    let recipientId = authHead.iss;
+    let senderId = payload.aud;
+    let recipientId = payload.iss;
 
-    let payload;
+    let msgPayload;
 
     try {
-      payload = await this.snsMgr.createMessage(
+      msgPayload = await this.snsMgr.createMessage(
         senderId,
         recipientId,
         encmessage
@@ -65,7 +89,7 @@ class SnsHandler {
     }
 
     try {
-      const messageId = await this.snsMgr.sendMessage(fullArn, payload);
+      const messageId = await this.snsMgr.sendMessage(fullArn, msgPayload);
       cb(null, messageId);
     } catch (err) {
       console.log("Error on this.snsMgr.sendMessage");
