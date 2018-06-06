@@ -1,11 +1,12 @@
 require("ethr-did-resolver")();
 require("uport-did-resolver")();
-import { verifyJWT, createJWT } from "did-jwt/lib/JWT";
+import { verifyJWT, createJWT, decodeJWT } from "did-jwt/lib/JWT";
 
 class UportMgr {
   async verifyToken(token) {
     if (!token) throw "no token";
-    return verifyJWT(token);
+    const audience = decodeJWT(token).payload.aud;
+    return verifyJWT(token, { audience });
   }
 
   async createToken(options, payload) {
