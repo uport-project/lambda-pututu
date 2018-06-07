@@ -15,7 +15,8 @@ describe("SnsMgr", () => {
   let sut;
   let senderId = 1234;
   let recipientId = 2345;
-  let encmessage = "secretmessage";
+  let encmessage =
+    '{"from":"efqzYJNqejlF25zY/LjtLmdGtiDiZbAxHlanINdVD38=","nonce":"5oVdrxgsUsk3cs/o1Y4KNv6eP2b6WO/r","ciphertext":"NOAeHyOvTvmV5BiYpeJwQAc3tIqc7xVcuxUIC9pGQsuXXUIQjDeyk7QdaNK4Us82oCE04FQndEPEPIMcHaZMpAHC74cEcX4PSpKmNAn98dqRtIUqF13fIwKkksxp3uOUZX6l9hQLGgZdYLQlT3nCODuBcemx9mm+1RdnCLIKow41krTbiAIozYfkrBL9L/cLN0NMP7zU42qhTOeYSu+lVl7LAEKtxWbapQXa7s17d7gRDyKgQu8zEJ5xotGVdV6wrfqWZ0TbrKftaO+CZb3LHnQX+aDBzu4LHxzji0vsDIeuj7EW1bkLzqjYnCK0ChJLxtd4a4p4xad0Wki7mRv4PmxcqGgxvo+zX6PAOu5z+bzxTa931rZFbBmG7FrzeafkzopZbnyLeaQKsX8oSRlBMeWOi6NRL4OpeCcCdomOtmc7peokBUiYMICo9qtOUH2A7nWKbpLHymR364XCEdg08JIUKcdPtIw+mzI+s3Len8ybHLlbhXgtdBBDQd/9rKYtWsLzz7ryAssQ1IYCq3WLE+aYtf306McDmWwXNgmr3NcbyaKPyWxSJ1E3NgmBPCpEV8kHQ4kVnu52+lbSQmNMyVy+hzGNSlG+68I78SUc2X/G4g=="}';
   let messagehash =
     "e37961d8153b209724520f48c7c1c781431302011de144425732be5f6bff23f2";
 
@@ -38,7 +39,7 @@ describe("SnsMgr", () => {
     sut.setSecrets({
       SNS_KEY_ID: "fakekey",
       SNS_KEY_SECRET: "fakesecret",
-      ARNDROID_ARN: "fake-android-arn",
+      ARNDROID_ARN: "arn:aws:sns:us-west-2:113196216558:app/GCM/uPort",
       IOS_ARN: "fake-ios-arn",
       PG_URL: "faken-pg-url"
     });
