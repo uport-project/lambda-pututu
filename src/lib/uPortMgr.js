@@ -5,7 +5,12 @@ import { verifyJWT, createJWT, decodeJWT } from "did-jwt/lib/JWT";
 class UportMgr {
   async verifyToken(token) {
     if (!token) throw "no token";
-    const audience = decodeJWT(token).payload.aud;
+    let audience;
+    try {
+      audience = decodeJWT(token).payload.aud;
+    } catch (error) {
+      console.log("token doesn't have audience", error);
+    }
     return verifyJWT(token, { audience });
   }
 
