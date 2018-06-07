@@ -70,17 +70,19 @@ class SnsHandler {
     console.log("event", event);
     console.log("Event body", event.body);
 
-    let encmessage = event.body.message;
+    let encMessage = event.body.message;
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
     let msgPayload;
 
+    console.log("encmessage", encMessage);
+
     try {
       msgPayload = await this.snsMgr.createMessage(
         senderId,
         recipientId,
-        encmessage
+        encMessage
       );
     } catch (err) {
       console.log("Error on sns.snsMgr.createMessage");
