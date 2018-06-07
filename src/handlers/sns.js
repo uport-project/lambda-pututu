@@ -67,7 +67,6 @@ class SnsHandler {
       return;
     }
 
-    console.log("event", event);
     console.log("Event body", event.body);
 
     let encMessage = event.body.message;
@@ -76,7 +75,9 @@ class SnsHandler {
 
     let msgPayload;
 
-    console.log("encmessage", encMessage);
+    console.log("enc-message", encMessage);
+    let parsedMessage = JSON.parse(event.body.message);
+    console.log("parsed-message", parsedMessage);
 
     try {
       msgPayload = await this.snsMgr.createMessage(
