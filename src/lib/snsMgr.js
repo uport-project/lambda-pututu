@@ -63,13 +63,6 @@ class SnsMgr {
       sandbox: true
     });
 
-    console.log("vs", vs);
-    console.log(
-      "androidApp.platformApplicationArn",
-      androidApp.platformApplicationArn
-    );
-    console.log(vs.includes(androidApp.platformApplicationArn));
-
     if (vs.includes(androidApp.platformApplicationArn)) app = androidApp;
     if (vs.includes(iosApp.platformApplicationArn)) app = iosApp;
     if (vs.includes(iosSandboxApp.platformApplicationArn)) app = iosSandboxApp;

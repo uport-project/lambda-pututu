@@ -67,6 +67,9 @@ class SnsHandler {
       return;
     }
 
+    console.log("event", event);
+    console.log("Event body", event.body);
+
     let encmessage = event.body.message;
     let senderId = payload.aud;
     let recipientId = payload.iss;
