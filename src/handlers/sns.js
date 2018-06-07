@@ -68,10 +68,10 @@ class SnsHandler {
       return;
     }
 
-    console.log("enc-message", event.body.message);
+    console.log("enc-message", event.body["message"]);
 
     let msgPayload;
-    let encMessage = event.body.message;
+    let encMessage = event.body["message"];
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
