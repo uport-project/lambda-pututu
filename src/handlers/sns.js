@@ -38,8 +38,6 @@ class SnsHandler {
       return;
     }
 
-    console.log("auth header", payload);
-
     if (payload.type !== "notifications") {
       cb({ code: 403, message: "type is not notifications" });
       return;
@@ -54,6 +52,7 @@ class SnsHandler {
     vsA[0] = vsA[0].replace("endpoint", "app");
     let vs = vsA.join("/");
 
+    console.log("vs", vs);
     let app = await this.snsMgr.verifyEndpointArn(vs);
     if (!app) {
       cb({ code: 400, message: "endpointArn not supported" });
