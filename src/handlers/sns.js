@@ -67,17 +67,14 @@ class SnsHandler {
       return;
     }
 
-    console.log("Event body", event.body);
+    console.log("enc-message", event.body.message);
+    let parsedMessage = JSON.parse(event.body.message);
+    console.log("parsed-message", parsedMessage);
 
+    let msgPayload;
     let encMessage = event.body.message;
     let senderId = payload.aud;
     let recipientId = payload.iss;
-
-    let msgPayload;
-
-    console.log("enc-message", encMessage);
-    let parsedMessage = JSON.parse(event.body.message);
-    console.log("parsed-message", parsedMessage);
 
     try {
       msgPayload = await this.snsMgr.createMessage(
