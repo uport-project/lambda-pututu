@@ -73,8 +73,6 @@ class SnsHandler {
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
-    console.log("encryptedMessage", encMessage);
-
     try {
       msgPayload = await this.snsMgr.createMessage(
         senderId,
@@ -89,10 +87,10 @@ class SnsHandler {
     }
 
     try {
-      const messageId = await this.snsMgr.sendMessage(fullArn, msgPayload);
+      const messageId = await this.snsMgr.storeMessage(fullArn, msgPayload);
       cb(null, messageId);
     } catch (err) {
-      console.log("Error on this.snsMgr.sendMessage");
+      console.log("Error on this.snsMgr.storeMessage");
       console.log(err);
       cb({ code: 500, message: err.message });
       return;
