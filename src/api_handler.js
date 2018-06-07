@@ -13,7 +13,7 @@ let uPortMgr = new UPortMgr();
 let snsMgr = new SnsMgr();
 let messageMgr = new MessageMgr();
 
-let snsHandler = new SnsHandler(snsMgr);
+let snsHandler = new SnsHandler(snsMgr, uPortMgr);
 let messageGetHandler = new MessageGetHandler(uPortMgr, messageMgr);
 let messageDeleteHandler = new MessageDeleteHandler(uPortMgr, messageMgr);
 
