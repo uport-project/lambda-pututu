@@ -27,6 +27,14 @@ class SnsHandler {
       return;
     }
 
+    let body;
+    try {
+      body = JSON.parse(event.body);
+    } catch (e) {
+      cb({ code: 403, message: "no json body: " + e.toString() });
+      return;
+    }
+
     let payload;
     try {
       let dtoken = await this.uPortMgr.verifyToken(parts[1]);
@@ -66,11 +74,7 @@ class SnsHandler {
       }
     });
 
-    let encMessage;
-
-    encMessage = JSON.parse(JSON.stringify(event.body)).message || event.body;
-    console.log("encMessage", encMessage);
-
+    let encMessage = body.message;
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
