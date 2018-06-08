@@ -96,16 +96,6 @@ class SnsHandler {
       cb({ code: 500, message: err.message });
       return;
     }
-
-    // try {
-    //   await this.snsMgr.storeMessage(fullArn, msgPayload);
-    //   cb(null);
-    // } catch (err) {
-    //   console.log("Error on this.snsMgr.storeMessage");
-    //   console.log(err);
-    //   cb({ code: 500, message: err.message });
-    //   return;
-    // }
   }
 }
 

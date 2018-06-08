@@ -15,7 +15,6 @@ describe("SnsMgr", () => {
   let sut;
   let senderId = 1234;
   let recipientId = 2345;
-
   let encmessage =
     '{"from":"efqzYJNqejlF25zY/LjtLmdGtiDiZbAxHlanINdVD38=","nonce":"5oVdrxgsUsk3cs/o1Y4KNv6eP2b6WO/r","ciphertext":"NOAeHyOvTvmV5BiYpeJwQAc3tIqc7xVcuxUIC9pGQsuXXUIQjDeyk7QdaNK4Us82oCE04FQndEPEPIMcHaZMpAHC74cEcX4PSpKmNAn98dqRtIUqF13fIwKkksxp3uOUZX6l9hQLGgZdYLQlT3nCODuBcemx9mm+1RdnCLIKow41krTbiAIozYfkrBL9L/cLN0NMP7zU42qhTOeYSu+lVl7LAEKtxWbapQXa7s17d7gRDyKgQu8zEJ5xotGVdV6wrfqWZ0TbrKftaO+CZb3LHnQX+aDBzu4LHxzji0vsDIeuj7EW1bkLzqjYnCK0ChJLxtd4a4p4xad0Wki7mRv4PmxcqGgxvo+zX6PAOu5z+bzxTa931rZFbBmG7FrzeafkzopZbnyLeaQKsX8oSRlBMeWOi6NRL4OpeCcCdomOtmc7peokBUiYMICo9qtOUH2A7nWKbpLHymR364XCEdg08JIUKcdPtIw+mzI+s3Len8ybHLlbhXgtdBBDQd/9rKYtWsLzz7ryAssQ1IYCq3WLE+aYtf306McDmWwXNgmr3NcbyaKPyWxSJ1E3NgmBPCpEV8kHQ4kVnu52+lbSQmNMyVy+hzGNSlG+68I78SUc2X/G4g=="}';
   let messagehash =
@@ -141,7 +140,7 @@ describe("SnsMgr", () => {
       });
   });
 
-  test("storeMessage() no payload", done => {
+  test("storeMessage() no sender id", done => {
     sut
       .storeMessage(messagehash)
       .then(resp => {
@@ -149,29 +148,38 @@ describe("SnsMgr", () => {
         done();
       })
       .catch(err => {
-        expect(err).toEqual("no payload");
+        expect(err).toEqual("no sender id");
+        done();
+      });
+  });
+
+  test("storeMessage() no recipient id", done => {
+    sut
+      .storeMessage(messagehash, senderId)
+      .then(resp => {
+        fail("shouldn't return");
+        done();
+      })
+      .catch(err => {
+        expect(err).toEqual("no recipient id");
+        done();
+      });
+  });
+
+  test("storemessage() no message", done => {
+    sut
+      .storeMessage(messagehash, senderId, recipientId)
+      .then(resp => {
+        fail("shouldn't return");
+        done();
+      })
+      .catch(err => {
+        expect(err).toEqual("no encrypted message");
         done();
       });
   });
 
   test("storeMessage() happy path", done => {
-    let payload = {
-      default: encmessage,
-      APNS: "apnstr",
-      APNS_SANDBOX: "apnstr",
-      GCM: JSON.stringify({
-        data: {
-          clientId: senderId,
-          messageHash: "msgHash",
-          custom_notification: {
-            body: encmessage,
-            title: "uPort",
-            clientId: "a",
-            icon: "notification_icon"
-          }
-        }
-      })
-    };
     pgClientMock.connect = jest.fn();
     pgClientMock.connect.mockClear();
     pgClientMock.end.mockClear();
@@ -181,13 +189,13 @@ describe("SnsMgr", () => {
     });
 
     sut
-      .storeMessage(messagehash, payload)
+      .storeMessage(messagehash, senderId, recipientId, encmessage)
       .then(resp => {
         expect(pgClientMock.connect).toBeCalled();
         expect(pgClientMock.query).toBeCalled();
         expect(pgClientMock.query).toBeCalledWith(
-          "INSERT INTO messages (id, payload) VALUES ($1, $2);",
-          [messagehash, payload]
+          "INSERT INTO messages (id, sender, recipient, message) VALUES ($1, $2, $3, $4);",
+          [messagehash, senderId, recipientId, encmessage]
         );
         expect(pgClientMock.end).toBeCalled();
         done();
