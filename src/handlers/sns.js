@@ -66,7 +66,11 @@ class SnsHandler {
       }
     });
 
-    let encMessage = event.body["message"] || event.body;
+    let encMessage;
+
+    encMessage = JSON.parse(JSON.stringify(event.body)).message || event.body;
+    console.log("encMessage", encMessage);
+
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
@@ -91,7 +95,6 @@ class SnsHandler {
         cb({ code: 500, message: err.message });
         return;
       } else {
-        console.log("it worked!");
         cb(null, messageId);
       }
     });
