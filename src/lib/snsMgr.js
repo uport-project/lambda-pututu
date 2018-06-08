@@ -116,12 +116,9 @@ class SnsMgr {
     return payload;
   }
 
-  async storeMessage(messagehash, senderId, recipientId, message) {
+  async storeMessage(messagehash, payload) {
     if (!messagehash) throw "no message hash";
-    if (!senderId) throw "no sender id";
-    if (!recipientId) throw "no recipient id";
-    if (!message) throw "no encrypted message";
-    if (!this.pgUrl) throw "no pgUrl set";
+    if (!payload) throw "no payload";
 
     const pgClient = new Client({
       connectionString: this.pgUrl
@@ -129,14 +126,8 @@ class SnsMgr {
 
     try {
       await pgClient.connect();
-      let qry =
-        "INSERT INTO messages (id, sender, recipient, message) VALUES ($1, $2, $3, $4);";
-      const res = await pgClient.query(qry, [
-        messagehash,
-        senderId,
-        recipientId,
-        message
-      ]);
+      let qry = "INSERT INTO messages (id, payload) VALUES ($1, $2);";
+      await pgClient.query(qry, [messagehash, payload]);
       return;
     } catch (e) {
       throw e;

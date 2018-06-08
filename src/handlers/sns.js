@@ -87,8 +87,8 @@ class SnsHandler {
     }
 
     try {
-      const messageId = await this.snsMgr.storeMessage(fullArn, msgPayload);
-      cb(null, messageId);
+      await this.snsMgr.storeMessage(fullArn, msgPayload);
+      cb(null);
     } catch (err) {
       console.log("Error on this.snsMgr.storeMessage");
       console.log(err);
