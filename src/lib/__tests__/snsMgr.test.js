@@ -39,7 +39,7 @@ describe("SnsMgr", () => {
     sut.setSecrets({
       SNS_KEY_ID: "fakekey",
       SNS_KEY_SECRET: "fakesecret",
-      ARNDROID_ARN: "arn:aws:sns:us-west-2:113196216558:app/GCM/uPort",
+      ANDROID_ARN: "fake-android-arn",
       IOS_ARN: "fake-ios-arn",
       PG_URL: "faken-pg-url"
     });

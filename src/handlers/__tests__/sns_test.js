@@ -8,13 +8,8 @@ describe("SnsHandler", () => {
   let uportMgrMock = new UportMgr();
   let validToken =
     "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1MjgyMzc2OTcsImV4cCI6MTYyODIzNzY5NywidHlwZSI6Im90cmFjb3NhIiwiaXNzIjoiZGlkOnVwb3J0OjEyMzQ1NjcifQ.NFq7h3rZbbqThLiUzFkqRT_MRw5borMRB2JCVXXgHXzYfq3CLjvsPGYHaMxl3aUcdULAkdjd5hkfy41cyf_FFA";
-  let anotherValidToken =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOjE1MjgzOTE1OTksImV4cCI6MTUyOTY4NzU5OSwiYXVkIjoiZGlkOnVwb3J0OjJvZVh1ZkhHRHBVNTFiZktCc1pEZHU3SmU5d2VKM3I3c1ZHIiwidHlwZSI6Im5vdGlmaWNhdGlvbnMiLCJ2YWx1ZSI6ImFybjphd3M6c25zOnVzLXdlc3QtMjoxMTMxOTYyMTY1NTg6ZW5kcG9pbnQvR0NNL3VQb3J0LzFhYjAyN2U3LTY1NWMtMzZlNi1hNzE0LWE3OTEyMDhlMTE4NSIsImlzcyI6ImRpZDp1cG9ydDoyb3ZLemd5eGdmREpwczgxWmpjMWJ4eFI3WjhZNEE0blVITSJ9.sL6KmDP4jUvw-08RhRue1DrijqANuRISrs6z2ktpsxw17XUON-cnQ04XPKbLjSsEL_SZYSdPw3W4aGbjeq7eGg";
 
   beforeAll(() => {
-    snsMgrMock.setSecrets({
-      ARNDROID_ARN: "arn:aws:sns:us-west-2:113196216558:app/GCM/uPort"
-    });
     sut = new SnsHandler(snsMgrMock, uportMgrMock);
   });
 
