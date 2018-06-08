@@ -86,16 +86,17 @@ class SnsHandler {
       return;
     }
 
-    let messageId;
-    try {
-      messageId = app.sendMessage(fullArn, payload);
-      cb(null, messageId);
-    } catch (err) {
-      console.log("Error on app.sendMessage");
-      console.log(err);
-      cb({ code: 500, message: err.message });
-      return;
-    }
+    app.sendMessage(fullArn, payload, (err, messageId) => {
+      if (err) {
+        console.log("Error on app.sendMessage");
+        console.log(err);
+        cb({ code: 500, message: err.message });
+        return;
+      } else {
+        let messageId = app.sendMessage(fullArn, payload);
+        cb(null, messageId);
+      }
+    });
   }
 }
 
