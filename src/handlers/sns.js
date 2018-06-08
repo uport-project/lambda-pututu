@@ -82,8 +82,8 @@ class SnsHandler {
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
-    console.log("before sendMessage");
-
+    console.log("before createMessage");
+    let msgPayload;
     try {
       let msgPayload = await this.snsMgr.createMessage(
         senderId,
@@ -98,14 +98,13 @@ class SnsHandler {
     }
 
     console.log("before sendMessage");
-    app.sendMessage(fullArn, payload, (err, messageId) => {
+    app.sendMessage(fullArn, msgPayload, (err, messageId) => {
       if (err) {
         console.log("Error on app.sendMessage");
         console.log(err);
         cb({ code: 500, message: err.message });
         return;
       } else {
-        let messageId = app.sendMessage(fullArn, payload);
         cb(null, messageId);
       }
     });
