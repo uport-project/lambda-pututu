@@ -35,24 +35,12 @@ describe("SnsHandler", () => {
     });
   });
 
-  test("handle malformed auth header", done => {
-    uportMgrMock.verifyToken = jest.fn().mockImplementationOnce(() => {
-      return Promise.resolve({ payload: { type: "othertype" } });
-    });
-    let authToken = "Bearer " + validToken;
-    sut.handle({ headers: { Authorization: authToken } }, {}, (err, res) => {
-      expect(err).not.toBeNull();
-      expect(err.message).toEqual("type is not notifications");
-      expect(err.code).toEqual(403);
-
-      done();
-    });
-    uportMgrMock.verifyToken.mockClear();
-  });
-
   test("handle invalid token", done => {
     sut.handle(
-      { headers: { Authorization: "Bearer 12345" } },
+      {
+        headers: { Authorization: "Bearer aa" },
+        body: JSON.stringify({ message: "asdf" })
+      },
       {},
       (err, res) => {
         expect(err).not.toBeNull();
@@ -61,5 +49,42 @@ describe("SnsHandler", () => {
         done();
       }
     );
+  });
+
+  test("handle malformed auth header", done => {
+    uportMgrMock.verifyToken = jest.fn().mockImplementationOnce(() => {
+      return Promise.resolve({ payload: { type: "othertype" } });
+    });
+    let authToken = "Bearer " + validToken;
+    sut.handle(
+      {
+        headers: { Authorization: authToken },
+        body: JSON.stringify({ message: "asdf" })
+      },
+      {},
+      (err, res) => {
+        expect(err).not.toBeNull();
+        expect(err.message).toEqual("type is not notifications");
+        expect(err.code).toEqual(403);
+
+        done();
+      }
+    );
+    uportMgrMock.verifyToken.mockClear();
+  });
+
+  test("handle null body", done => {
+    uportMgrMock.verifyToken = jest.fn().mockImplementationOnce(() => {
+      return Promise.resolve({ payload: { type: "othertype" } });
+    });
+    let authToken = "Bearer " + validToken;
+    sut.handle({ headers: { Authorization: authToken } }, {}, (err, res) => {
+      expect(err).not.toBeNull();
+      expect(err.message).toContain("no json body");
+      expect(err.code).toEqual(403);
+
+      done();
+    });
+    uportMgrMock.verifyToken.mockClear();
   });
 });

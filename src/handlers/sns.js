@@ -27,6 +27,14 @@ class SnsHandler {
       return;
     }
 
+    let body;
+    try {
+      body = JSON.parse(event.body);
+    } catch (e) {
+      cb({ code: 403, message: "no json body: " + e.toString() });
+      return;
+    }
+
     let payload;
     try {
       let dtoken = await this.uPortMgr.verifyToken(parts[1]);
@@ -37,8 +45,6 @@ class SnsHandler {
       cb({ code: 401, message: "Invalid token" });
       return;
     }
-
-    console.log("auth header", payload);
 
     if (payload.type !== "notifications") {
       cb({ code: 403, message: "type is not notifications" });
@@ -60,26 +66,24 @@ class SnsHandler {
       return;
     }
 
-    try {
-      await app.getUser(fullArn);
-    } catch (err) {
-      console.log("Error on sns.getUser");
-      console.log(err);
-      cb({ code: 500, message: err.message });
-      return;
-    }
+    app.getUser(fullArn, (err, user) => {
+      if (err) {
+        console.log("Error on sns.getUser");
+        console.log(err);
+        cb({ code: 500, message: err.message });
+      }
+    });
 
-    let encmessage = event.body.message;
+    let encMessage = body.message;
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
     let msgPayload;
-
     try {
       msgPayload = await this.snsMgr.createMessage(
         senderId,
         recipientId,
-        encmessage
+        encMessage
       );
     } catch (err) {
       console.log("Error on sns.snsMgr.createMessage");
@@ -88,15 +92,16 @@ class SnsHandler {
       return;
     }
 
-    try {
-      const messageId = await this.snsMgr.sendMessage(fullArn, msgPayload);
-      cb(null, messageId);
-    } catch (err) {
-      console.log("Error on this.snsMgr.sendMessage");
-      console.log(err);
-      cb({ code: 500, message: err.message });
-      return;
-    }
+    app.sendMessage(fullArn, msgPayload, (err, messageId) => {
+      if (err) {
+        console.log("Error on app.sendMessage");
+        console.log(err);
+        cb({ code: 500, message: err.message });
+        return;
+      } else {
+        cb(null, messageId);
+      }
+    });
   }
 }
 

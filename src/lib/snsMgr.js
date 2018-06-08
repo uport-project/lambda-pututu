@@ -62,9 +62,10 @@ class SnsMgr {
       platformApplicationArn: this.ios_sandbox_arn,
       sandbox: true
     });
-    if (vs === androidApp.platformApplicationArn) app = androidApp;
-    if (vs === iosApp.platformApplicationArn) app = iosApp;
-    if (vs === iosSandboxApp.platformApplicationArn) app = iosSandboxApp;
+
+    if (vs.includes(androidApp.platformApplicationArn)) app = androidApp;
+    if (vs.includes(iosApp.platformApplicationArn)) app = iosApp;
+    if (vs.includes(iosSandboxApp.platformApplicationArn)) app = iosSandboxApp;
     return app;
   }
 
