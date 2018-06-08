@@ -52,23 +52,11 @@ class SnsHandler {
     vsA[0] = vsA[0].replace("endpoint", "app");
     let vs = vsA.join("/");
 
-    console.log("vs", vs);
     let app = await this.snsMgr.verifyEndpointArn(vs);
     if (!app) {
       cb({ code: 400, message: "endpointArn not supported" });
       return;
     }
-
-    try {
-      await app.getUser(fullArn);
-    } catch (err) {
-      console.log("Error on sns.getUser");
-      console.log(err);
-      cb({ code: 500, message: err.message });
-      return;
-    }
-
-    console.log("before getUser");
 
     app.getUser(fullArn, (err, user) => {
       if (err) {
@@ -82,10 +70,9 @@ class SnsHandler {
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
-    console.log("before createMessage");
     let msgPayload;
     try {
-      let msgPayload = await this.snsMgr.createMessage(
+      msgPayload = await this.snsMgr.createMessage(
         senderId,
         recipientId,
         encMessage
@@ -97,7 +84,6 @@ class SnsHandler {
       return;
     }
 
-    console.log("before sendMessage");
     app.sendMessage(fullArn, msgPayload, (err, messageId) => {
       if (err) {
         console.log("Error on app.sendMessage");
@@ -105,6 +91,7 @@ class SnsHandler {
         cb({ code: 500, message: err.message });
         return;
       } else {
+        console.log("it worked!");
         cb(null, messageId);
       }
     });
