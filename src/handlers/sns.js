@@ -68,13 +68,24 @@ class SnsHandler {
       return;
     }
 
-    let msgPayload;
+    console.log("before getUser");
+
+    app.getUser(fullArn, (err, user) => {
+      if (err) {
+        console.log("Error on sns.getUser");
+        console.log(err);
+        cb({ code: 500, message: err.message });
+      }
+    });
+
     let encMessage = event.body["message"] || event.body;
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
+    console.log("before sendMessage");
+
     try {
-      msgPayload = await this.snsMgr.createMessage(
+      let msgPayload = await this.snsMgr.createMessage(
         senderId,
         recipientId,
         encMessage
@@ -86,6 +97,7 @@ class SnsHandler {
       return;
     }
 
+    console.log("before sendMessage");
     app.sendMessage(fullArn, payload, (err, messageId) => {
       if (err) {
         console.log("Error on app.sendMessage");
