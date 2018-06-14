@@ -1,6 +1,7 @@
 class SnsHandler {
-  constructor(snsMgr) {
+  constructor(snsMgr, uPortMgr) {
     this.snsMgr = snsMgr;
+    this.uPortMgr = uPortMgr;
   }
 
   async handle(event, context, cb) {
@@ -15,17 +16,47 @@ class SnsHandler {
 
     let authHead = event.headers["Authorization"];
 
-    if (authHead.type !== "notifications") {
+    let parts = authHead.split(" ");
+    if (parts.length !== 2) {
+      cb({ code: 401, message: "Format is Authorization: Bearer [token]" });
+      return;
+    }
+    let scheme = parts[0];
+    if (scheme !== "Bearer") {
+      cb({ code: 401, message: "Format is Authorization: Bearer [token]" });
+      return;
+    }
+
+    let body;
+    try {
+      body = JSON.parse(event.body);
+    } catch (e) {
+      cb({ code: 403, message: "no json body: " + e.toString() });
+      return;
+    }
+
+    let payload;
+    try {
+      let dtoken = await this.uPortMgr.verifyToken(parts[1]);
+      payload = dtoken.payload;
+    } catch (error) {
+      console.log("Error on this.uportMgr.verifyToken");
+      console.log(error);
+      cb({ code: 401, message: "Invalid token" });
+      return;
+    }
+
+    if (payload.type !== "notifications") {
       cb({ code: 403, message: "type is not notifications" });
       return;
     }
-    if (authHead.value === undefined) {
+    if (payload.value === undefined) {
       cb({ code: 403, message: "value missing" });
       return;
     }
 
-    let fullArn = authHead.value;
-    let vsA = req.authorization.value.split("/");
+    let fullArn = payload.value;
+    let vsA = fullArn.split("/");
     vsA[0] = vsA[0].replace("endpoint", "app");
     let vs = vsA.join("/");
 
@@ -35,26 +66,24 @@ class SnsHandler {
       return;
     }
 
+    app.getUser(fullArn, (err, user) => {
+      if (err) {
+        console.log("Error on sns.getUser");
+        console.log(err);
+        cb({ code: 500, message: err.message });
+      }
+    });
+
+    let encMessage = body.message;
+    let senderId = payload.aud;
+    let recipientId = payload.iss;
+
+    let msgPayload;
     try {
-      await app.getUser(fullArn);
-    } catch (err) {
-      console.log("Error on sns.getUser");
-      console.log(err);
-      cb({ code: 500, message: err.message });
-      return;
-    }
-
-    let encmessage = event.body.message;
-    let senderId = authHead.aud;
-    let recipientId = authHead.iss;
-
-    let payload;
-
-    try {
-      payload = await this.snsMgr.createMessage(
+      msgPayload = await this.snsMgr.createMessage(
         senderId,
         recipientId,
-        encmessage
+        encMessage
       );
     } catch (err) {
       console.log("Error on sns.snsMgr.createMessage");
@@ -63,15 +92,16 @@ class SnsHandler {
       return;
     }
 
-    try {
-      const messageId = await this.snsMgr.sendMessage(fullArn, payload);
-      cb(null, messageId);
-    } catch (err) {
-      console.log("Error on this.snsMgr.sendMessage");
-      console.log(err);
-      cb({ code: 500, message: err.message });
-      return;
-    }
+    app.sendMessage(fullArn, msgPayload, (err, messageId) => {
+      if (err) {
+        console.log("Error on app.sendMessage");
+        console.log(err);
+        cb({ code: 500, message: err.message });
+        return;
+      } else {
+        cb(null, messageId);
+      }
+    });
   }
 }
 

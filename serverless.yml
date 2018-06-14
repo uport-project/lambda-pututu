@@ -43,6 +43,8 @@ functions:
       - http:
           path: sns
           method: post
+          cors: true
+
   message_get:
     handler: src/api_handler.messsage_get
     events:
