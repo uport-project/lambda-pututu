@@ -1,3 +1,14 @@
+jest.mock("pg");
+import { Client } from "pg";
+let pgClientMock = {
+  connect: jest.fn(),
+  query: jest.fn(),
+  end: jest.fn()
+};
+Client.mockImplementation(() => {
+  return pgClientMock;
+});
+
 const MessageGetHandler = require("../message_get");
 const UportMgr = require("../../lib/uPortMgr");
 const MessageMgr = require("../../lib/messageMgr");
@@ -12,6 +23,7 @@ describe("MessageGetHandler", () => {
     "e37961d8153b209724520f48c7c1c781431302011de144425732be5f6bff23f2";
 
   beforeAll(() => {
+    messageMgrMock.getMessage = jest.fn();
     sut = new MessageGetHandler(uportMgrMock, messageMgrMock);
   });
 
@@ -63,6 +75,32 @@ describe("MessageGetHandler", () => {
         expect(err).not.toBeNull();
         expect(err.code).toEqual(401);
         expect(err.message).toEqual("Invalid token");
+        done();
+      }
+    );
+  });
+
+  test("happy path", done => {
+    messageMgrMock.getMessage = jest.fn().mockImplementation(() => {
+      return Promise.resolve({
+        id: "14e7404952d6c3314f764a104eec71f46f7c1f60bcd2cef91126348e125cdf33",
+        sender: "35DDXwF6Hdr6dQQo1BRwQru7W3d54avzBwk",
+        recipient: "did:ethr:0x8e5a49d9e5bac18169360f97dd89db4c5d7a11a1",
+        message: "abcdef",
+        created: Date.now()
+      });
+    });
+
+    sut.handle(
+      {
+        headers: { Authorization: "Bearer " + validToken },
+        pathParameters: {
+          id: "14e7404952d6c3314f764a104eec71f46f7c1f60bcd2cef91126348e125cdf33"
+        }
+      },
+      {},
+      (err, res) => {
+        expect(err).toBeNull();
         done();
       }
     );
