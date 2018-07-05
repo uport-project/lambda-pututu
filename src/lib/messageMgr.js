@@ -65,7 +65,7 @@ class MessageMgr {
     try {
       await pgClient.connect();
       let qry = "DELETE FROM messages WHERE recipient = $1 and id = $2";
-      const res = await pgClient.query(qry, [recipientId, messageId]);
+      await pgClient.query(qry, [recipientId, messageId]);
       return;
     } catch (e) {
       throw e;

@@ -1,6 +1,6 @@
 {
   "name": "lambda-pututu",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "uPort push notification service",
   "main": "index.js",
   "scripts": {
