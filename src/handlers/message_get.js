@@ -45,7 +45,7 @@ class MessageGetHandler {
       let msg;
       messageId = event.pathParameters.id;
       try {
-        msg = await this.messageMgr.getMessage(recipientId, messageId);
+        msg = await this.messageMgr.getMessage(messageId);
         console.log("message returned", msg);
         if (!msg) {
           cb({ code: 404, message: "message not found" });
