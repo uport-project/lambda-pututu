@@ -42,17 +42,19 @@ class MessageDeleteHandler {
 
     if (event.pathParameters && event.pathParameters.id) {
       let messageId;
-      let message;
+      let msg;
       messageId = event.pathParameters.id;
       try {
-        msg = await this.messageMgr.getMessage(recipientId, messageId);
+        msg = await this.messageMgr.getMessage(messageId);
         if (!msg) {
           cb({ code: 404, message: "message not found" });
+          return;
         }
-        if (msg && msg.recipient != recipientId) {
+        if (!msg.recipient.includes(recipientId)) {
           cb({ code: 403, message: "forbidden" });
+          return;
         }
-        await this.messageMgr.delete(recipientId, messageId);
+        await this.messageMgr.deleteMessage(recipientId, messageId);
         cb(null);
         return;
       } catch (error) {
