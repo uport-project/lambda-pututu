@@ -37,7 +37,6 @@ class MessageGetHandler {
       cb({ code: 401, message: "Invalid token" });
       return;
     }
-    console.log("payload", payload);
     let recipientId = payload.iss;
 
     if (event.pathParameters && event.pathParameters.id) {
@@ -46,11 +45,10 @@ class MessageGetHandler {
       messageId = event.pathParameters.id;
       try {
         msg = await this.messageMgr.getMessage(messageId);
-        console.log("message returned", msg);
         if (!msg) {
           cb({ code: 404, message: "message not found" });
         }
-        if (msg.recipient != recipientId) {
+        if (!msg.recipient.includes(recipientId)) {
           cb({ code: 403, message: "access to message forbidden" });
         }
         cb(null, { messages: msg });
