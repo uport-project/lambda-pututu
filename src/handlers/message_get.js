@@ -37,7 +37,7 @@ class MessageGetHandler {
       cb({ code: 401, message: "Invalid token" });
       return;
     }
-
+    console.log("payload", payload);
     let recipientId = payload.iss;
 
     if (event.pathParameters && event.pathParameters.id) {
