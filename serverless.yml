@@ -46,7 +46,7 @@ functions:
           cors: true
 
   message_get:
-    handler: src/api_handler.messsage_get
+    handler: src/api_handler.message_get
     events:
       - http:
           path: message
