@@ -52,7 +52,7 @@ class MessageGetHandler {
         if (!msg.recipient.includes(recipientId)) {
           cb({ code: 403, message: "access to message forbidden" });
         }
-        cb(null, { messages: msg });
+        cb(null, msg);
         return;
       } catch (error) {
         console.log("Error on this.messageMgr.getMessage");
@@ -66,7 +66,7 @@ class MessageGetHandler {
         if (messages.length == 0) {
           cb({ code: 404, message: "message not found" });
         }
-        cb(null, { messages: messages });
+        cb(null, messages);
       } catch (error) {
         console.log("Error on this.messageMgr.getAllMessages");
         console.log(error);
