@@ -63,7 +63,7 @@ class MessageGetHandler {
     } else {
       try {
         let messages = await this.messageMgr.getAllMessages(recipientId);
-        if (messages.length == 0) {
+        if (messages.length === 0) {
           cb({ code: 404, message: "message not found" });
         }
         cb(null, messages);
