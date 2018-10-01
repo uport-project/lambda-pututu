@@ -52,19 +52,24 @@ functions:
       - http:
           path: message
           method: get
+          cors: true
       - http:
           path: message/{id}
+          cors: true
           method: get
           request:
             parameters:
               paths:
                 id: true
+
+
   message_delete:
     handler: src/api_handler.message_delete
     events:
       - http:
           path: message/{id}
           method: delete
+          cors: true
           request:
             parameters:
               paths:
