@@ -1,4 +1,4 @@
-import { Client } from "pg";
+const { Client }  = require('pg');
 
 class MessageMgr {
   constructor() {

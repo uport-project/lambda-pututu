@@ -1,89 +1,31 @@
 "use strict";
-const AWS = require("aws-sdk");
+const createJsendHandler = require("./lib/jsend");
+const createSecretsWrappedHandler = require("./lib/secrets_wrapper");
 
+//Load Mgrs
 const UPortMgr = require("./lib/uPortMgr");
 const MessageMgr = require("./lib/messageMgr");
 const SnsMgr = require("./lib/snsMgr");
 
-const SnsHandler = require("./handlers/sns");
-const MessageGetHandler = require("./handlers/message_get");
-const MessageDeleteHandler = require("./handlers/message_delete");
-
+//Instanciate Mgr
 let uPortMgr = new UPortMgr();
 let snsMgr = new SnsMgr();
 let messageMgr = new MessageMgr();
 
-let snsHandler = new SnsHandler(snsMgr, uPortMgr);
-let messageGetHandler = new MessageGetHandler(uPortMgr, messageMgr);
-let messageDeleteHandler = new MessageDeleteHandler(uPortMgr, messageMgr);
+//Mgr that needs secrets handling
+const secretsMgrArr=[snsMgr,messageMgr];
 
-const doHandler = (handler, event, context, callback) => {
-  handler.handle(event, context, (err, resp) => {
-    let response;
-    if (err == null) {
-      response = {
-        statusCode: 200,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-          "Access-Control-Allow-Headers": "snaphuntjwttoken",
-          "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT"
-        },
-        body: JSON.stringify({
-          status: "success",
-          data: resp
-        })
-      };
-    } else {
-      let code = 500;
-      if (err.code) code = err.code;
-      let message = err;
-      if (err.message) message = err.message;
+//Load handlers
+const SnsHandler = require("./handlers/sns");
+const MessageGetHandler = require("./handlers/message_get");
+const MessageDeleteHandler = require("./handlers/message_delete");
 
-      response = {
-        statusCode: code,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Credentials": true,
-          "Access-Control-Allow-Headers": "snaphuntjwttoken",
-          "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT"
-        },
-        body: JSON.stringify({
-          status: "error",
-          message: message
-        })
-      };
-    }
+//Instanciate handlers
+const snsHandler = createJsendHandler(new SnsHandler(snsMgr, uPortMgr));
+const messageGetHandler = createJsendHandler(new MessageGetHandler(uPortMgr, messageMgr));
+const messageDeleteHandler = createJsendHandler(new MessageDeleteHandler(uPortMgr, messageMgr));
 
-    callback(null, response);
-  });
-};
-
-const postHandler = (handler, event, context, callback) => {
-  if (!messageMgr.isSecretsSet() || !snsMgr.isSecretsSet()) {
-    const kms = new AWS.KMS();
-    kms
-      .decrypt({
-        CiphertextBlob: Buffer(process.env.SECRETS, "base64")
-      })
-      .promise()
-      .then(data => {
-        const decrypted = String(data.Plaintext);
-        snsMgr.setSecrets(JSON.parse(decrypted));
-        messageMgr.setSecrets(JSON.parse(decrypted));
-        doHandler(handler, event, context, callback);
-      });
-  } else {
-    doHandler(handler, event, context, callback);
-  }
-};
-
-module.exports.sns = (event, context, callback) => {
-  postHandler(snsHandler, event, context, callback);
-};
-module.exports.message_get = (event, context, callback) => {
-  postHandler(messageGetHandler, event, context, callback);
-};
-module.exports.message_delete = (event, context, callback) => {
-  postHandler(messageDeleteHandler, event, context, callback);
-};
+//Exports for serverless
+module.exports.sns = createSecretsWrappedHandler(secretsMgrArr,snsHandler);
+module.exports.message_get = createSecretsWrappedHandler(secretsMgrArr,messageGetHandler);
+module.exports.message_delete = createSecretsWrappedHandler(secretsMgrArr,messageDeleteHandler);
