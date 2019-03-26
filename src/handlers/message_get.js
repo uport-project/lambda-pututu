@@ -47,13 +47,12 @@ class MessageGetHandler {
         msg = await this.messageMgr.getMessage(messageId);
 
         if (!msg) {
-          cb({ code: 404, message: "message not found" });
+          cb({ code: 404, message: "message not found" }); return;
         }
         if (!msg.recipient.includes(recipientId)) {
-          cb({ code: 403, message: "access to message forbidden" });
+          cb({ code: 403, message: "access to message forbidden" }); return
         }
-        cb(null, msg);
-        return;
+        cb(null, msg); return;
       } catch (error) {
         console.log("Error on this.messageMgr.getMessage");
         console.log(error);
@@ -64,9 +63,9 @@ class MessageGetHandler {
       try {
         let messages = await this.messageMgr.getAllMessages(recipientId);
         if (messages.length === 0) {
-          cb({ code: 404, message: "message not found" });
+          cb({ code: 404, message: "messages not found" }); return;
         }
-        cb(null, messages);
+        cb(null, messages); return;
       } catch (error) {
         console.log("Error on this.messageMgr.getAllMessages");
         console.log(error);

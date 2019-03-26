@@ -1,22 +1,22 @@
-require("ethr-did-resolver")();
-require("uport-did-resolver")();
-import { verifyJWT, createJWT, decodeJWT } from "did-jwt/lib/JWT";
+const didJWT = require('did-jwt')
 
 class UportMgr {
+
+  constructor() {
+    require('ethr-did-resolver').default()
+    require("uport-did-resolver").default();
+  }
+
   async verifyToken(token) {
     if (!token) throw "no token";
     let audience;
     try {
-      audience = decodeJWT(token).payload.aud;
+      audience = didJWT.decodeJWT(token).payload.aud;
     } catch (error) {
       console.log("token doesn't have audience", error);
     }
-    return verifyJWT(token, { audience });
+    return didJWT.verifyJWT(token, { audience });
   }
-
-  async createToken(options, payload) {
-    if (!payload) throw "no payload";
-    return createJWT(payload, options);
-  }
+  
 }
 module.exports = UportMgr;

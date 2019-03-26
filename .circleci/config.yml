@@ -1,9 +1,9 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/lambda-pututu
+    working_directory: ~/repo
     docker:
-      - image: circleci/node:6.10
+      - image: circleci/node:8.10
     steps:
       - checkout
 
@@ -16,7 +16,7 @@ jobs:
           name: install-serverless-and dependencies
           command: |
             sudo npm i -g serverless codecov
-            yarn
+            npm i
 
       - run:
           name: test
@@ -41,3 +41,9 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - ./node_modules
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build

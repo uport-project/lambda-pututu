@@ -1,6 +1,6 @@
-import SNS from "sns-mobile";
-import sha3 from "solidity-sha3";
-import { Client } from "pg";
+const SNS  = require('sns-mobile');
+const web3Utils = require('web3-utils')
+const { Client }  = require('pg');
 
 class SnsMgr {
   constructor() {
@@ -74,7 +74,7 @@ class SnsMgr {
     if (!recipientId) throw "no recipientId";
     if (!encmessage) throw "no encmessage";
 
-    const messageHash = sha3(
+    const messageHash = web3Utils.soliditySha3(
       [senderId, recipientId, encmessage, Date.now().toString()].join(":")
     ).slice(2);
     const message = "New secure message";
