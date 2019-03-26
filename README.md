@@ -2,7 +2,7 @@
 uPort Push Notification Service
 
 
-[![CircleCI](https://circleci.com/gh/uport-project/lambda-pututu.svg?style=svg&circle-token=1fd72a3c528eaf32683f0bf516b42930aa605ad9)](https://circleci.com/gh/uport-project/lambda-pututu)
+[![CircleCI](https://circleci.com/gh/uport-project/lambda-pututu.svg?style=svg&circle-token=3089834b1d47b092584f880b06b6e4d64ee85950)](https://circleci.com/gh/uport-project/lambda-pututu)
 
 
 [![codecov](https://codecov.io/gh/uport-project/lambda-pututu/branch/master/graph/badge.svg?token=sOSXCfJpz7)](https://codecov.io/gh/uport-project/lambda-pututu)

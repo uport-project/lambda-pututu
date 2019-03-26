@@ -45,7 +45,6 @@ class MessageGetHandler {
       messageId = event.pathParameters.id;
       try {
         msg = await this.messageMgr.getMessage(messageId);
-
         if (!msg) {
           cb({ code: 404, message: "message not found" }); return;
         }

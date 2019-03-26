@@ -75,6 +75,7 @@ class SnsHandler {
     });
 
     let encMessage = body.message;
+    let alert = body.alert;
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
@@ -83,7 +84,8 @@ class SnsHandler {
       msgPayload = await this.snsMgr.createMessage(
         senderId,
         recipientId,
-        encMessage
+        encMessage,
+        alert
       );
     } catch (err) {
       console.log("Error on sns.snsMgr.createMessage");
