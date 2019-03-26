@@ -80,8 +80,89 @@ describe("MessageGetHandler", () => {
     );
   });
 
-  test("happy path", done => {
-    messageMgrMock.getMessage = jest.fn().mockImplementation(() => {
+  test("handle fail token", done => {
+    messageMgrMock.getMessage = jest.fn().mockImplementationOnce( () => {throw Error("fail")});
+    sut.handle(
+      {
+        headers: { Authorization: "Bearer " + validToken },
+        pathParameters: {
+          id: "14e7404952d6c3314f764a104eec71f46f7c1f60bcd2cef91126348e125cdf33"
+        }
+      },
+      {},
+      (err, res) => {
+        expect(err).not.toBeNull();
+        expect(err.code).toEqual(500);
+        expect(err.message).toEqual("fail");
+        done();
+      }
+    );
+  });
+
+  test("handle fail getMessage", done => {
+    messageMgrMock.getMessage = jest.fn().mockImplementationOnce( () => {throw Error("fail")});
+    sut.handle(
+      {
+        headers: { Authorization: "Bearer " + validToken },
+        pathParameters: {
+          id: "14e7404952d6c3314f764a104eec71f46f7c1f60bcd2cef91126348e125cdf33"
+        }
+      },
+      {},
+      (err, res) => {
+        expect(err).not.toBeNull();
+        expect(err.code).toEqual(500);
+        expect(err.message).toEqual("fail");
+        done();
+      }
+    );
+  });
+
+  test("handle message not found", done => {
+    messageMgrMock.getMessage = jest.fn().mockImplementationOnce( () => { return Promise.resolve(null) });
+    sut.handle(
+      {
+        headers: { Authorization: "Bearer " + validToken },
+        pathParameters: {
+          id: "14e7404952d6c3314f764a104eec71f46f7c1f60bcd2cef91126348e125cdf33"
+        }
+      },
+      {},
+      (err, res) => {
+        expect(err).not.toBeNull();
+        expect(err.code).toEqual(404);
+        expect(err.message).toEqual("message not found");
+        done();
+      }
+    );
+  });
+
+  test("handle access to message forbidden", done => {
+    messageMgrMock.getMessage = jest.fn().mockImplementationOnce( () => { 
+      return Promise.resolve({
+        recipient: "did:some:weird"
+      }); 
+    });
+    sut.handle(
+      {
+        headers: { Authorization: "Bearer " + validToken },
+        pathParameters: {
+          id: "14e7404952d6c3314f764a104eec71f46f7c1f60bcd2cef91126348e125cdf33"
+        }
+      },
+      {},
+      (err, res) => {
+        expect(err).not.toBeNull();
+        expect(err.code).toEqual(403);
+        expect(err.message).toEqual("access to message forbidden");
+        done();
+      }
+    );
+  });
+
+
+  test("happy path (with id)", done => {
+    messageMgrMock.getMessage = jest.fn().mockImplementationOnce(() => {
       return Promise.resolve({
         id: "14e7404952d6c3314f764a104eec71f46f7c1f60bcd2cef91126348e125cdf33",
         sender: "35DDXwF6Hdr6dQQo1BRwQru7W3d54avzBwk",
@@ -105,4 +186,63 @@ describe("MessageGetHandler", () => {
       }
     );
   });
+
+
+  test("handle fail getAllMessages", done => {
+    messageMgrMock.getAllMessages = jest.fn().mockImplementationOnce( () => {throw Error("fail getAllMessages")});
+    sut.handle(
+      {
+        headers: { Authorization: "Bearer " + validToken },
+      },
+      {},
+      (err, res) => {
+        expect(err).not.toBeNull();
+        expect(err.code).toEqual(500);
+        expect(err.message).toEqual("fail getAllMessages");
+        done();
+      }
+    );
+  });
+
+  test("handle message not found (all messages)", done => {
+    messageMgrMock.getAllMessages = jest.fn().mockImplementationOnce( () => { return Promise.resolve([]) });
+    sut.handle(
+      {
+        headers: { Authorization: "Bearer " + validToken },
+      },
+      {},
+      (err, res) => {
+        expect(err).not.toBeNull();
+        expect(err.code).toEqual(404);
+        expect(err.message).toEqual("messages not found");
+        done();
+      }
+    );
+  });
+
+  test("happy path (all)", done => {
+    messageMgrMock.getAllMessages = jest.fn().mockImplementationOnce(() => {
+      return Promise.resolve([{
+        id: "14e7404952d6c3314f764a104eec71f46f7c1f60bcd2cef91126348e125cdf33",
+        sender: "35DDXwF6Hdr6dQQo1BRwQru7W3d54avzBwk",
+        recipient: "did:ethr:0x8e5a49d9e5bac18169360f97dd89db4c5d7a11a1",
+        message: "abcdef",
+        created: Date.now()
+      }]);
+    });
+
+    sut.handle(
+      {
+        headers: { Authorization: "Bearer " + validToken },
+      },
+      {},
+      (err, res) => {
+        expect(err).toBeNull();
+        done();
+      }
+    );
+  });
+  
 });
+
+
