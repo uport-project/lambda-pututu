@@ -65,6 +65,9 @@ Authorization: Bearer <jwt token>
   message: <messageId>
 }
 ```
+### Sequence Diagram
+
+![APIv2-Sns-Seq](./diagrams/img/api-v2.message.seq.png)
 
 
 ### Retrieve and delete encrypted messages
@@ -167,4 +170,4 @@ Authorization: Bearer <jwt user-auth token>
 
 ### Sequence Diagram
 
-![Sns Seq](./diagrams/img/message.seq.png)
+![APIv2-Message-Seq](./diagrams/img/api-v2.message.seq.png)
