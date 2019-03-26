@@ -17,40 +17,47 @@ describe("UportMgr", () => {
     expect(sut).not.toBeUndefined();
   });
 
-  test("verifyToken() no token", done => {
-    sut
-      .verifyToken(null)
-      .then(resp => {
-        fail("shouldn't return");
-        done();
-      })
-      .catch(err => {
-        expect(err).toEqual("no token");
-        done();
-      });
-  });
+  describe("verifyToken()", () => {
 
-  describe("verifyToken() happy path", () => {
-    const DATE_TO_USE = new Date(1513399280000);
-    Object.keys(jwts).forEach(didType => {
-      test(didType, done => {
-        const eventToken = jwts[didType];
-        Date.now = jest.fn().mockReturnValue(DATE_TO_USE);
-
-        sut.verifyToken(eventToken).then(
-          resp => {
-            expect(resp.jwt).toEqual(eventToken);
-            expect(resp.payload.event.address).toEqual(
-              "2ozsFQWAU7CpHZLqu2wSYbJFWzDNB26aoCF"
-            );
-            done();
-          },
-          error => {
-            expect(error).toBeUndefined();
-            done();
-          }
-        );
+    test("verifyToken() no token", done => {
+      sut
+        .verifyToken(null)
+        .then(resp => {
+          fail("shouldn't return");
+          done();
+        })
+        .catch(err => {
+          expect(err).toEqual("no token");
+          done();
+        });
+    });
+  
+    describe("verifyToken() happy path", () => {
+      const DATE_TO_USE = new Date(1513399280000);
+      Object.keys(jwts).forEach(didType => {
+        test(didType, done => {
+          const eventToken = jwts[didType];
+          Date.now = jest.fn().mockReturnValue(DATE_TO_USE);
+  
+          sut.verifyToken(eventToken).then(
+            resp => {
+              expect(resp.jwt).toEqual(eventToken);
+              expect(resp.payload.event.address).toEqual(
+                "2ozsFQWAU7CpHZLqu2wSYbJFWzDNB26aoCF"
+              );
+              done();
+            },
+            error => {
+              expect(error).toBeUndefined();
+              done();
+            }
+          );
+        });
       });
     });
-  });
+  
+
+
+  })
+
 });

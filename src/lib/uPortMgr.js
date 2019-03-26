@@ -19,8 +19,9 @@ class UportMgr {
   }
 
   async createToken(options, payload) {
+    if (!options) throw "no options";
     if (!payload) throw "no payload";
-    return did.createJWT(payload, options);
+    return didJWT.createJWT(payload, options);
   }
 }
 module.exports = UportMgr;
