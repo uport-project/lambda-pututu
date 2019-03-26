@@ -17,11 +17,6 @@ class UportMgr {
     }
     return didJWT.verifyJWT(token, { audience });
   }
-
-  async createToken(options, payload) {
-    if (!options) throw "no options";
-    if (!payload) throw "no payload";
-    return didJWT.createJWT(payload, options);
-  }
+  
 }
 module.exports = UportMgr;
