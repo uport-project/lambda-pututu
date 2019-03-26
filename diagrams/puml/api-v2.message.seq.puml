@@ -1,0 +1,26 @@
+@startuml
+participant "uPort Mobile App" as uPort
+participant "uPort::pututu" as pututu
+database "PostgresSQL" as db
+
+uPort -> pututu: Retrieve Message\nGET /api/v2/message/
+activate pututu
+pututu -> db: Find Messages by Recipient
+pututu -> uPort: 200 OK: <Retrieved messages>
+deactivate pututu
+
+
+uPort -> pututu: Retrieve Message\nGET /api/v2/message/<messageId>
+activate pututu
+pututu -> db: Get Message
+pututu -> uPort: 200 OK: <Retrieved message>
+deactivate pututu
+
+
+uPort -> pututu: Delete Message\nDELETE /api/v2/message/<messageId>
+activate pututu
+pututu -> db: Delete Message
+pututu -> uPort: 200: OK
+deactivate pututu
+
+@enduml
