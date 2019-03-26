@@ -69,7 +69,7 @@ class SnsMgr {
     return app;
   }
 
-  async createMessage(senderId, recipientId, encmessage) {
+  async createMessage(senderId, recipientId, encmessage, alert) {
     if (!senderId) throw "no senderId";
     if (!recipientId) throw "no recipientId";
     if (!encmessage) throw "no encmessage";
@@ -77,7 +77,7 @@ class SnsMgr {
     const messageHash = sha3(
       [senderId, recipientId, encmessage, Date.now().toString()].join(":")
     ).slice(2);
-    const message = "New secure message";
+    const message = alert || "New secure message";
     await this.storeMessage(messageHash, senderId, recipientId, encmessage);
 
     let count = await this.getCountbyRecipient(recipientId);
