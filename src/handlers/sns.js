@@ -102,6 +102,7 @@ class SnsHandler {
         return;
       } else {
         cb(null, messageId);
+        return;
       }
     });
   }
