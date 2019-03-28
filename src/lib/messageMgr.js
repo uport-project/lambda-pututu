@@ -14,8 +14,8 @@ class MessageMgr {
   }
 
   async getMessage(messageId) {
-    if (!messageId) throw "no message id";
-    if (!this.pgUrl) throw "no pgUrl set";
+    if (!messageId) throw Error("no message id");
+    if (!this.pgUrl) throw Error("no pgUrl set");
 
     const pgClient = new Client({
       connectionString: this.pgUrl
@@ -34,8 +34,8 @@ class MessageMgr {
   }
 
   async getAllMessages(recipientId) {
-    if (!recipientId) throw "no recipient id";
-    if (!this.pgUrl) throw "no pgUrl set";
+    if (!recipientId) throw Error("no recipient id");
+    if (!this.pgUrl) throw  Error("no pgUrl set");
 
     const pgClient = new Client({
       connectionString: this.pgUrl
@@ -54,9 +54,9 @@ class MessageMgr {
   }
 
   async deleteMessage(recipientId, messageId) {
-    if (!recipientId) throw "no recipient id";
-    if (!messageId) throw "no message id";
-    if (!this.pgUrl) throw "no pgUrl set";
+    if (!recipientId) throw  Error("no recipient id");
+    if (!messageId) throw  Error("no message id");
+    if (!this.pgUrl) throw  Error("no pgUrl set");
 
     const pgClient = new Client({
       connectionString: this.pgUrl
