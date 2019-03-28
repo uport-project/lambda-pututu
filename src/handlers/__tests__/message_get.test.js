@@ -204,7 +204,7 @@ describe("MessageGetHandler", () => {
     );
   });
 
-  test("handle message not found (all messages)", done => {
+  test.skip("handle message not found (all messages)", done => {
     messageMgrMock.getAllMessages = jest.fn().mockImplementationOnce( () => { return Promise.resolve([]) });
     sut.handle(
       {
@@ -220,7 +220,7 @@ describe("MessageGetHandler", () => {
     );
   });
 
-  test("happy path (all)", done => {
+  test.skip("happy path (all)", done => {
     messageMgrMock.getAllMessages = jest.fn().mockImplementationOnce(() => {
       return Promise.resolve([{
         id: "14e7404952d6c3314f764a104eec71f46f7c1f60bcd2cef91126348e125cdf33",

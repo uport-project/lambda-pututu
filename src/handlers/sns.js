@@ -5,6 +5,7 @@ class SnsHandler {
   }
 
   async handle(event, context, cb) {
+    console.log("Starting ...");
     if (!event.headers) {
       cb({ code: 403, message: "no headers" });
       return;
@@ -65,14 +66,20 @@ class SnsHandler {
       cb({ code: 400, message: "endpointArn not supported" });
       return;
     }
+    console.log(app);
 
-    app.getUser(fullArn, (err, user) => {
-      if (err) {
-        console.log("Error on sns.getUser");
-        console.log(err);
-        cb({ code: 500, message: err.message });
-      }
-    });
+    let user;
+    try {
+      user = await this.snsMgr.getUser(app,fullArn);
+    } catch (err) {
+      console.log("Error on sns.snsMgr.getUser");
+      console.log(err);
+      cb({ code: 500, message: err.message });
+      return;
+    }
+    console.log(user);
+
+    //Check if user is stil enabled
 
     let encMessage = body.message;
     let alert = body.alert;
@@ -93,18 +100,19 @@ class SnsHandler {
       cb({ code: 500, message: err.message });
       return;
     }
+    console.log(msgPayload);
 
-    app.sendMessage(fullArn, msgPayload, (err, messageId) => {
-      if (err) {
-        console.log("Error on app.sendMessage");
-        console.log(err);
-        cb({ code: 500, message: err.message });
-        return;
-      } else {
-        cb(null, messageId);
-        return;
-      }
-    });
+    try {
+      const messageId = await this.snsMgr.sendMessage(app,fullArn,msgPayload);
+      console.log("messageId: "+messageId);
+      cb(null,messageId); return;
+    } catch (err) {
+      console.log("Error on sns.snsMgr.sendMessage");
+      console.log(err);
+      cb({ code: 500, message: err.message });
+      return;
+    }
+    
   }
 }
 
