@@ -11,12 +11,12 @@ module.exports = createJsendHandler = (handler) => {
                 })
               };
             } else {
-              //console.log(err);
               let code = 500;
               if (err.code) code = err.code;
               let message = err;
               if (err.message) message = err.message;
-        
+              console.log("Return Error Code: "+code+" Message: "+message);
+              
               response = {
                 statusCode: code,
                 body: JSON.stringify({

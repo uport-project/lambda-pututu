@@ -32,7 +32,7 @@ class SnsMgr {
   }
 
   async verifyEndpointArn(vs) {
-    if (!vs) throw "no platform application ARN";
+    if (!vs) throw Error("no platform application ARN");
     let app;
     let androidApp = new SNS({
       platform: SNS.SUPPORTED_PLATFORMS.ANDROID,
@@ -70,9 +70,9 @@ class SnsMgr {
   }
 
   async createMessage(senderId, recipientId, encmessage, alert) {
-    if (!senderId) throw "no senderId";
-    if (!recipientId) throw "no recipientId";
-    if (!encmessage) throw "no encmessage";
+    if (!senderId) throw Error("no senderId");
+    if (!recipientId) throw Error("no recipientId");
+    if (!encmessage) throw Error("no encmessage");
 
     const messageHash = web3Utils.soliditySha3(
       [senderId, recipientId, encmessage, Date.now().toString()].join(":")
@@ -114,11 +114,11 @@ class SnsMgr {
   }
 
   async storeMessage(messagehash, senderId, recipientId, message) {
-    if (!messagehash) throw "no message hash";
-    if (!senderId) throw "no sender id";
-    if (!recipientId) throw "no recipient id";
-    if (!message) throw "no encrypted message";
-    if (!this.pgUrl) throw "no pgUrl set";
+    if (!messagehash) throw Error("no message hash");
+    if (!senderId) throw Error("no sender id");
+    if (!recipientId) throw Error("no recipient id");
+    if (!message) throw Error("no encrypted message");
+    if (!this.pgUrl) throw Error("no pgUrl set");
 
     const pgClient = new Client({
       connectionString: this.pgUrl
@@ -143,8 +143,8 @@ class SnsMgr {
   }
 
   async getCountbyRecipient(recipientId) {
-    if (!recipientId) throw "no recipient id";
-    if (!this.pgUrl) throw "no pgUrl set";
+    if (!recipientId) throw Error("no recipient id");
+    if (!this.pgUrl) throw Error("no pgUrl set");
 
     const pgClient = new Client({
       connectionString: this.pgUrl
@@ -161,5 +161,40 @@ class SnsMgr {
       await pgClient.end();
     }
   }
+
+  /**
+   * Calls https://docs.aws.amazon.com/sns/latest/api/API_GetEndpointAttributes.html
+   * 
+   * @param {app for the endpoint} app 
+   * @param {fulArn of the user} fullArn 
+   */
+
+  async getUser(app,fullArn){
+    if (!app) throw Error("no app");
+    if (!fullArn) throw Error("no fullArn");
+
+    return new Promise( (resolve,reject) => {
+      app.getUser(fullArn, (err, user) => {
+        if (err) reject(err);
+        else resolve(user);
+      });
+    })
+  }
+    
+
+  async sendMessage(app, fullArn, msgPayload){
+    if (!app) throw Error("no app");
+    if (!fullArn) throw Error("no fullArn");
+    if (!msgPayload) throw Error("no msgPayload");
+
+    return new Promise( (resolve,reject) => {
+      app.sendMessage(fullArn, msgPayload, (err, messageId) => {
+        if (err) reject(err);
+        else resolve(messageId);
+      });
+    })
+    
+  }
+
 }
 module.exports = SnsMgr;

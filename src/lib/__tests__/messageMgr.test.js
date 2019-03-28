@@ -27,6 +27,46 @@ describe("MessageMgr", () => {
     expect(sut).not.toBeUndefined();
   });
 
+  test("getMessage() fail if no pgUrl", done => {
+    sut
+      .getMessage(messagehash)
+      .then(resp => {
+        fail("shouldn't return");
+        done();
+      })
+      .catch(err => {
+        expect(err.message).toEqual("no pgUrl set");
+        done();
+      });
+  });
+
+  test("getAllMessages() fail if no pgUrl", done => {
+    sut
+      .getAllMessages(recipientId)
+      .then(resp => {
+        fail("shouldn't return");
+        done();
+      })
+      .catch(err => {
+        expect(err.message).toEqual("no pgUrl set");
+        done();
+      });
+  });
+
+  test("deleteMessage() fail if no pgUrl", done => {
+    sut
+      .deleteMessage(recipientId,messagehash)
+      .then(resp => {
+        fail("shouldn't return");
+        done();
+      })
+      .catch(err => {
+        expect(err.message).toEqual("no pgUrl set");
+        done();
+      });
+  });
+
+
   test("is isSecretsSet", () => {
     let secretSet = sut.isSecretsSet();
     expect(secretSet).toEqual(false);
@@ -40,158 +80,203 @@ describe("MessageMgr", () => {
     expect(sut.isSecretsSet()).toEqual(true);
   });
 
-  test("getMessage() no message id", done => {
-    sut
-      .getMessage()
-      .then(resp => {
-        fail("shouldn't return");
-        done();
-      })
-      .catch(err => {
-        expect(err).toEqual("no message id");
-        done();
-      });
-  });
+  describe("getMessage()", ()=>{
 
-  test("getMessage() happy path", done => {
-    pgClientMock.connect = jest.fn();
-    pgClientMock.connect.mockClear();
-    pgClientMock.end.mockClear();
-    pgClientMock.query.mockClear();
-    pgClientMock.query = jest.fn(() => {
-      return Promise.resolve({
-        rows: [
-          {
-            id: messagehash,
-            sender: senderId,
-            recipient: recipientId,
-            message: encmessage,
-            created: Date.now()
-          }
-        ]
-      });
+    test("fail if no message id", done => {
+      sut
+        .getMessage()
+        .then(resp => {
+          fail("shouldn't return");
+          done();
+        })
+        .catch(err => {
+          expect(err.message).toEqual("no message id");
+          done();
+        });
+    });
+  
+    test("handle query fail", done => {
+      pgClientMock.query.mockImplementationOnce(() => { throw "error in query" });
+      sut
+        .getMessage(messagehash)
+        .then(resp => {
+          fail("shouldn't return");
+          done();
+        })
+        .catch(err => {
+          expect(err).toEqual("error in query");
+          done();
+        });
     });
 
-    sut
-      .getMessage(messagehash)
-      .then(resp => {
-        expect(pgClientMock.connect).toBeCalled();
-        expect(pgClientMock.query).toBeCalled();
-        expect(pgClientMock.query).toBeCalledWith(
-          "SELECT * FROM messages WHERE id = $1",
-          [messagehash]
-        );
-        expect(pgClientMock.end).toBeCalled();
-        done();
-      })
-      .catch(err => {
-        fail(err);
-        done();
-      });
-  });
 
-  test("getAllMessages() no recipient id", done => {
-    sut
-      .getAllMessages()
-      .then(resp => {
-        fail("shouldn't return");
-        done();
-      })
-      .catch(err => {
-        expect(err).toEqual("no recipient id");
-        done();
+    test("happy path", done => {
+      pgClientMock.query.mockImplementationOnce(() => {
+        return Promise.resolve({
+          rows: [
+            {
+              id: messagehash,
+              sender: senderId,
+              recipient: recipientId,
+              message: encmessage,
+              created: Date.now()
+            }
+          ]
+        });
       });
-  });
+  
+      sut
+        .getMessage(messagehash)
+        .then(resp => {
+          expect(pgClientMock.connect).toBeCalled();
+          expect(pgClientMock.query).toBeCalled();
+          expect(pgClientMock.query).toBeCalledWith(
+            "SELECT * FROM messages WHERE id = $1",
+            [messagehash]
+          );
+          expect(pgClientMock.end).toBeCalled();
+          done();
+        })
+        .catch(err => {
+          fail(err);
+          done();
+        });
+    });
+  
+  })
 
-  test("getAllMessages() happy path", done => {
-    pgClientMock.connect = jest.fn();
-    pgClientMock.connect.mockClear();
-    pgClientMock.end.mockClear();
-    pgClientMock.query.mockClear();
-    pgClientMock.query = jest.fn(() => {
-      return Promise.resolve({
-        rows: [
-          {
-            id: messagehash,
-            sender: senderId,
-            recipient: recipientId,
-            message: encmessage,
-            created: Date.now()
-          }
-        ]
-      });
+  describe("getAllMessages()", ()=>{
+
+    test("fail if no recipient id", done => {
+      sut
+        .getAllMessages()
+        .then(resp => {
+          fail("shouldn't return");
+          done();
+        })
+        .catch(err => {
+          expect(err.message).toEqual("no recipient id");
+          done();
+        });
+    });
+    
+    test("handle query fail", done => {
+      pgClientMock.query.mockImplementationOnce(() => { throw "error in query" });
+      sut
+        .getAllMessages(recipientId)
+        .then(resp => {
+          fail("shouldn't return");
+          done();
+        })
+        .catch(err => {
+          expect(err).toEqual("error in query");
+          done();
+        });
     });
 
-    sut
-      .getAllMessages(recipientId)
-      .then(resp => {
-        expect(pgClientMock.connect).toBeCalled();
-        expect(pgClientMock.query).toBeCalled();
-        expect(pgClientMock.query).toBeCalledWith(
-          "SELECT * FROM messages WHERE recipient = $1",
-          [recipientId]
-        );
-        expect(pgClientMock.end).toBeCalled();
-        done();
-      })
-      .catch(err => {
-        fail(err);
-        done();
+    test("happy path", done => {
+      pgClientMock.query.mockImplementationOnce(() => {
+        return Promise.resolve({
+          rows: [
+            {
+              id: messagehash,
+              sender: senderId,
+              recipient: recipientId,
+              message: encmessage,
+              created: Date.now()
+            }
+          ]
+        });
       });
-  });
+  
+      sut
+        .getAllMessages(recipientId)
+        .then(resp => {
+          expect(pgClientMock.connect).toBeCalled();
+          expect(pgClientMock.query).toBeCalled();
+          expect(pgClientMock.query).toBeCalledWith(
+            "SELECT * FROM messages WHERE recipient = $1",
+            [recipientId]
+          );
+          expect(pgClientMock.end).toBeCalled();
+          done();
+        })
+        .catch(err => {
+          fail(err);
+          done();
+        });
+    });
+  
+  })
 
-  test("deleteMessage() no recipientId id", done => {
-    sut
-      .deleteMessage()
-      .then(resp => {
-        fail("shouldn't return");
-        done();
-      })
-      .catch(err => {
-        expect(err).toEqual("no recipient id");
-        done();
-      });
-  });
+  describe("deleteMessage()", ()=>{
 
-  test("deleteMessage() no message id", done => {
-    sut
-      .deleteMessage(recipientId)
-      .then(resp => {
-        fail("shouldn't return");
-        done();
-      })
-      .catch(err => {
-        expect(err).toEqual("no message id");
-        done();
-      });
-  });
-
-  test("delete() happy path", done => {
-    pgClientMock.connect = jest.fn();
-    pgClientMock.connect.mockClear();
-    pgClientMock.end.mockClear();
-    pgClientMock.query.mockClear();
-    pgClientMock.query = jest.fn(() => {
-      return Promise.resolve({
-        rows: ["ok"]
-      });
+    test("fail no recipientId id", done => {
+      sut
+        .deleteMessage()
+        .then(resp => {
+          fail("shouldn't return");
+          done();
+        })
+        .catch(err => {
+          expect(err.message).toEqual("no recipient id");
+          done();
+        });
+    });
+  
+    test("fail no message id", done => {
+      sut
+        .deleteMessage(recipientId)
+        .then(resp => {
+          fail("shouldn't return");
+          done();
+        })
+        .catch(err => {
+          expect(err.message).toEqual("no message id");
+          done();
+        });
+    });
+  
+    test("handle query fail", done => {
+      pgClientMock.query.mockImplementationOnce(() => { throw "error in query" });
+      sut
+        .deleteMessage(recipientId, messagehash)
+        .then(resp => {
+          fail("shouldn't return");
+          done();
+        })
+        .catch(err => {
+          expect(err).toEqual("error in query");
+          done();
+        });
     });
 
-    sut
-      .deleteMessage(recipientId, messagehash)
-      .then(resp => {
-        expect(pgClientMock.connect).toBeCalled();
-        expect(pgClientMock.query).toBeCalled();
-        expect(pgClientMock.query).toBeCalledWith(
-          "DELETE FROM messages WHERE recipient = $1 and id = $2",
-          [recipientId, messagehash]
-        );
-        expect(pgClientMock.end).toBeCalled();
-        done();
-      })
-      .catch(err => {
-        fail(err);
-        done();
+    test("happy path", done => {
+      pgClientMock.query.mockImplementationOnce(() => {
+        return Promise.resolve({
+          rows: ["ok"]
+        });
       });
-  });
+  
+      sut
+        .deleteMessage(recipientId, messagehash)
+        .then(resp => {
+          expect(pgClientMock.connect).toBeCalled();
+          expect(pgClientMock.query).toBeCalled();
+          expect(pgClientMock.query).toBeCalledWith(
+            "DELETE FROM messages WHERE recipient = $1 and id = $2",
+            [recipientId, messagehash]
+          );
+          expect(pgClientMock.end).toBeCalled();
+          done();
+        })
+        .catch(err => {
+          fail(err);
+          done();
+        });
+    });
+
+
+  })
+  
 });
