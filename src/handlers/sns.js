@@ -80,6 +80,25 @@ class SnsHandler {
     console.log(user);
 
     //Check if user is stil enabled
+    /*
+{
+	ResponseMetadata: {
+		RequestId: 'f8c5b818-4c3a-5934-b2ca-ed0f5ed6a83e'
+	},
+	Attributes: {
+		Enabled: 'true',
+		Token: 'ba1887d84800e584419237e1b16b579024495587ed06026750ceb95b0011f072',
+		CustomUserData: 'did:ethr:0x6d1548000d99161f7e1aca6e24775105447bcd4b'
+	},
+	EndpointArn: 'arn:aws:sns:us-west-2:113196216558:endpoint/APNS/uPort/5a7fdacd-fa0d-3906-a1c9-35c02f21383f'
+}
+    */
+
+    if (user.Attributes.Enabled!='true') {
+      console.log("endpointArn not enabled: "+user.Attributes.Enabled);
+      cb({ code: 400, message: "endpointArn not enabled" });
+      return;
+    }
 
     let encMessage = body.message;
     let alert = body.alert;
