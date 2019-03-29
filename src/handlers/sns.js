@@ -36,6 +36,7 @@ class SnsHandler {
       return;
     }
 
+    console.log("calling uPortMgr.verifyToken: "+parts[1]);
     let payload;
     try {
       let dtoken = await this.uPortMgr.verifyToken(parts[1]);
@@ -61,6 +62,7 @@ class SnsHandler {
     vsA[0] = vsA[0].replace("endpoint", "app");
     let vs = vsA.join("/");
 
+    console.log("calling snsMgr.verifyEndpointArn: "+vs);
     let app = await this.snsMgr.verifyEndpointArn(vs);
     if (!app) {
       cb({ code: 400, message: "endpointArn not supported" });
@@ -68,11 +70,12 @@ class SnsHandler {
     }
     console.log(app);
 
+    console.log("calling snsMgr.getUser: "+fullArn);
     let user;
     try {
       user = await this.snsMgr.getUser(app,fullArn);
     } catch (err) {
-      console.log("Error on sns.snsMgr.getUser");
+      console.log("Error on snsMgr.getUser");
       console.log(err);
       cb({ code: 500, message: err.message });
       return;
@@ -105,6 +108,7 @@ class SnsHandler {
     let senderId = payload.aud;
     let recipientId = payload.iss;
 
+    console.log("calling snsMgr.createMessage ...");
     let msgPayload;
     try {
       msgPayload = await this.snsMgr.createMessage(
@@ -121,6 +125,7 @@ class SnsHandler {
     }
     console.log(msgPayload);
 
+    console.log("calling snsMgr.sendMessage ...");
     try {
       const messageId = await this.snsMgr.sendMessage(app,fullArn,msgPayload);
       console.log("messageId: "+messageId);
