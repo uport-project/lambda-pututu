@@ -34,11 +34,15 @@ custom:
     dashboards: true
     topics:
       alarm: arn:aws:sns:us-west-2:113196216558:cloudwatch-alarm-to-slack
+    definitions: 
+      functionDuration:
+        threshold: 2500 # override avereage duration alert
     alarms:
       - functionThrottles
       - functionErrors
       - functionInvocations
       - functionDuration
+      
   
 functions:
   sns:
