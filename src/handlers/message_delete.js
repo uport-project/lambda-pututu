@@ -27,6 +27,7 @@ class MessageDeleteHandler {
       return;
     }
 
+    console.log("calling uPortMgr.verifyToken: "+parts[1]);
     let payload;
     try {
       let dtoken = await this.uPortMgr.verifyToken(parts[1]);
@@ -45,6 +46,7 @@ class MessageDeleteHandler {
       let msg;
       messageId = event.pathParameters.id;
       try {
+        console.log("calling messageMgr.getMessage: "+messageId);
         msg = await this.messageMgr.getMessage(messageId);
         if (!msg) {
           cb({ code: 404, message: "message not found" });
@@ -54,6 +56,7 @@ class MessageDeleteHandler {
           cb({ code: 403, message: "forbidden" });
           return;
         }
+        console.log("calling messageMgr.deleteMessage: "+recipientId);
         await this.messageMgr.deleteMessage(recipientId, messageId);
         cb(null);
         return;
