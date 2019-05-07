@@ -29,9 +29,14 @@
   "homepage": "https://github.com/uport-project/lambda-pututu#readme",
   "devDependencies": {
     "aws-sdk-mock": "^1.7.0",
+    "body-parser": "^1.19.0",
+    "express": "^4.16.4",
     "jest": "^23.6.0",
+    "ngrok": "^3.1.1",
     "serverless-domain-manager": "^3.2.1",
-    "serverless-offline": "^4.4.2"
+    "serverless-offline": "^4.4.2",
+    "uport-credentials": "^1.2.1",
+    "uport-transports": "^0.2.6"
   },
   "dependencies": {
     "did-jwt": "^0.1.1",
